@@ -23,7 +23,6 @@ $restCall = false;
 $restPath = str_replace("/REST", "",  $_SERVER['REQUEST_URI']);
 $clientIp = $_SERVER['REMOTE_ADDR'];
 
-//schwaebische rest calls
 foreach($allowedRest AS $regex => $ipRanges){
 	if(preg_match($regex, $restPath)){
 		if (empty($ipRanges)) {

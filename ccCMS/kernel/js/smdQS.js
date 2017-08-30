@@ -5,27 +5,35 @@
  * @version 2.0-testing
  * @author Matthias Weiß <m.weiss@smdigital.de>
  *
- * @changes		20150000	MW	:	- Initialversion
- * @changes		20170300	MW	:	- New structure and tools (docReady and loadJS)
+ * @changes     20150000    MW	:   - Initialversion
+ *              20170300    MW	:   - New structure and tools (docReady and requireJS)
+ *              20170420    MW  :   - dropped "isDomObject", added requireCSS
+ *              20170424    MW  :   - avoid double adding of CSS/JS with requireCSS/-JS
+ *              20170711    MW  :   - __requireElement now has an option to ignore if reinsert an css/js
+ *              20170714    MW  :   - errorHandler for ajax() and optimizing
  *
+ * @url https://github.com/schwaebischmediadigital/smdqs/tree/testing
  */
-(function(funcName, baseObj) {
+(function(funcName, baseObj)
+{
 	funcName = funcName || "smdQS";
-	baseObj = baseObj || window;
-	
-	var __init = false;
-	var __readyList = [];
-	var __readyFired = false;
+	baseObj  = baseObj || window;
+
+	var __init                        = false;
+	var __readyList                   = [];
+	var __readyFired                  = false;
 	var __readyEventHandlersInstalled = false;
-	
+
 	/**
 	 * Initializer for prototype funktions hasClass, addClass, removeClass, toggleClass
+	 *
+	 * @private
 	 */
 	function _smdQSinitHtmLElements()
 	{
 		var elementPrototype = typeof HTMLElement !== "undefined" ? HTMLElement.prototype : (typeof Element !== "undefined" ? Element.prototype : null);
-	
-		if (elementPrototype != null) {
+
+		if (elementPrototype !== null) {
 			elementPrototype.removeClass = function (remove)
 			{
 				var newClassName = "";
@@ -40,13 +48,13 @@
 			};
 			elementPrototype.addClass    = function (add)
 			{
-				if (this.className.indexOf(add) == -1) {
+				if (this.className.indexOf(add) === -1) {
 					this.className = this.className + " " + add;
 				}
 			};
 			elementPrototype.toggleClass = function (toggle)
 			{
-				if (this.className.indexOf(toggle) == -1) {
+				if (this.className.indexOf(toggle) === -1) {
 					this.addClass(toggle);
 				} else {
 					this.removeClass(toggle);
@@ -54,11 +62,11 @@
 			};
 			elementPrototype.hasClass    = function (classToCheck)
 			{
-				return (this.className.indexOf(classToCheck) != -1);
+				return (this.className.indexOf(classToCheck) !== -1);
 			};
 		}
-	};
-	
+	}
+
 	/**
 	 * jQuery.ajax() Equivalent
 	 *
@@ -66,49 +74,51 @@
 	 * @param callback      Callback function, that gets the responseText if status 200 or 201 is returned
 	 * @param data          data as array or string (...=...&...=...)
 	 * @param method        GET (default), POST, PUT, DELETE
+	 * @private
 	 */
-	function _ajax(url, callback, data, method)
-	{	
-		if (typeof url === "object") {
-			var ajaxCallObject = url;
-			url                = ajaxCallObject.url || undefined;
-			callback           = ajaxCallObject.callback || undefined;
-			data               = ajaxCallObject.data || "";
-			method             = ajaxCallObject.method || "GET";
+	function _ajax(urlOrObject, callback, data, method)
+	{
+		var errorCallback;
+		if (typeof urlOrObject === "object") {
+			data               = urlOrObject.data || "";
+			method             = urlOrObject.method || "GET";
+			callback           = urlOrObject.callback || undefined;
+			errorCallback      = urlOrObject.errorCallback || undefined;
+			urlOrObject        = urlOrObject.url || undefined;
 		}
-		
-		if (typeof url == "undefined" || typeof callback == "undefined") {
+
+		if (typeof urlOrObject === "undefined" || typeof callback === "undefined") {
 			return false;
 		}
-	
+
 		var xmlHttp = null;
-	
+
 		if (window.XMLHttpRequest) {
 			xmlHttp = new XMLHttpRequest();
 		} else if (window.ActiveXObject) {
 			xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
 		}
 
-		if (xmlHttp != null) {
+		if (xmlHttp !== null) {
 			function readyStateHandler(e)
 			{
-				if (xmlHttp.readyState === 4) {
-					if (xmlHttp.status === 200 || xmlHttp.status === 201) {
-						callback(xmlHttp.responseText);
-					}
+				if (xmlHttp.readyState === 4 && (xmlHttp.status === 200 || xmlHttp.status === 201)) {
+					callback(xmlHttp.responseText);
+				} else if (typeof errorCallback === "function") {
+					errorCallback(xmlHttp);
 				}
 			}
 
 			xmlHttp.onload = readyStateHandler;
 
-			if (typeof data == "undefined") {
+			if (typeof data === "undefined") {
 				data = "";
 			}
-			if (method != "GET" && method != "POST") {
+			if (method !== "GET" && method !== "POST") {
 				method = "GET";
 			}
 
-			if (typeof data == "object") {
+			if (typeof data === "object") {
 				var dataObject = data;
 				data           = "";
 				for (var key in dataObject) {
@@ -116,55 +126,150 @@
 				}
 			}
 
-			if (method == "POST" || method == "PUT" || method == "DELETE") {
-				xmlHttp.open(method, url, true);
+			if (method === "POST" || method === "PUT" || method === "DELETE") {
+				xmlHttp.open(method, urlOrObject, true);
 				xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 				xmlHttp.send(data);
 			} else {
-				if (data != "") {
+				if (data !== "") {
 					data = "?" + data;
 				}
-				xmlHttp.open("GET", url + data, true);
+				xmlHttp.open("GET", urlOrObject + data, true);
 				xmlHttp.send();
 			}
+			return true;
 		}
-	};
-	
+	}
+
 	/**
-	 * Based on loadJS; 
-	 * inserts a script-tag and executes an optional callback onload
+	 * Simple hashing function for uniq ids (_requireElement)
 	 *
-	 * @param scriptSource	URL of a js-script
-	 * @param callback		optional callback function
+	 * Source: http://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
+	 *
+	 * @param s
+	 * @returns {*}
+	 * @private
 	 */
-	function _requireJS(scriptSource, callback)
-	{	
-		if (typeof scriptSource == "undefined") {
+	function __hashString(s)
+	{
+		var hash = 0, i, chr;
+		if (s.length === 0) return hash;
+		for (i = 0; i < s.length; i++) {
+			chr  = s.charCodeAt(i);
+			hash = ((hash << 5) - hash) + chr;
+			hash |= 0;
+		}
+		return hash;
+	}
+
+	/**
+	 * Based on loadJS;
+	 * inserts a script tag or a link (css) tag  and executes an optional callback onload
+	 *
+	 * @param type      type of the script (stylesheet or javascript)
+	 * @param source    URL of a script
+	 * @param callback  optional callback function
+	 * @param clear     drops an existing tag before (re)insert
+	 * @private
+	 */
+	function __requireElement(type, source, callback, clear)
+	{
+		if (
+			typeof source === "undefined" ||
+			typeof type === "undefined"
+		) {
 			return false;
 		}
-	
-		"use strict";
-		var ref = window.document.getElementsByTagName( "script" )[ 0 ];
-		var script = window.document.createElement( "script" );
-		script.src = scriptSource;
-		script.async = true;
-		ref.parentNode.insertBefore( script, ref );
-		if (callback && typeof(callback) === "function") {
-			script.onload = callback;
+
+		var existingElement = document.querySelector("#smdQS" + __hashString(source));
+
+		if (existingElement !== null && clear === true) {
+			existingElement.parentNode.removeChild(existingElement);
+			existingElement = null;
 		}
-	};
-	
+
+		if (existingElement === null) {
+			"use strict";
+
+			var ref        = null;
+			var newElement = null;
+
+			switch (type) {
+				case 'javascript':
+					ref              = window.document.getElementsByTagName("script")[0];
+					newElement       = window.document.createElement("script");
+					newElement.src   = source;
+					newElement.async = true;
+					newElement.id    = "smdQS" + __hashString(source);
+					break;
+				case 'stylesheet':
+					ref             = window.document.getElementsByTagName("link")[0];
+					newElement      = window.document.createElement("link");
+					newElement.href = source;
+					newElement.type = "text/css";
+					newElement.rel  = "stylesheet";
+					newElement.id   = "smdQS" + __hashString(source);
+					break;
+			}
+
+			if (newElement === null) {
+				return false;
+			}
+
+			if (callback && typeof(callback) === "function") {
+				newElement.onload = callback;
+			}
+
+			if (ref === null) {
+				window.document.querySelector("head").appendChild(newElement);
+			} else {
+				ref.parentNode.insertBefore(newElement, ref);
+			}
+		} else if (typeof(callback) === "function") {
+			callback();
+		}
+
+	}
+
 	/**
-	 * a $( document ).ready({});-like 
+	 * Loads a javascript from scriptSource
+	 *
+	 * @param scriptSource
+	 * @param callback
+	 * @param clear
+	 * @returns {*}
+	 * @private
+	 */
+	function _requireJS(scriptSource, callback, clear)
+	{
+		return __requireElement("javascript", scriptSource, callback, clear);
+	}
+
+	/**
+	 * Loads a stylesheet from sheetSource
+	 *
+	 * @param sheetSource
+	 * @param callback
+	 * @param clear
+	 * @returns {*}
+	 * @private
+	 */
+	function _requireCSS(sheetSource, callback, clear)
+	{
+		return __requireElement("stylesheet", sheetSource, callback, clear);
+	}
+
+	/**
+	 * a $( document ).ready({});-alike
 	 * Forked from https://github.com/jfriend00/docReady
 	 *
-	 * @param callback	that will be fired if document is ready
-	 * @param context	optional context
+	 * @param callback   that will be fired if document is ready
+	 * @param context    optional context
 	 */
 	function _docReady(callback, context)
 	{
 		if (__readyFired) {
-			setTimeout(function() {callback(context);}, 1);
+			setTimeout(function () {callback(context);}, 1);
 			return;
 		} else {
 			__readyList.push({fn: callback, ctx: context});
@@ -176,17 +281,18 @@
 				document.addEventListener("DOMContentLoaded", _documentIsReady, false);
 				window.addEventListener("load", _documentIsReady, false);
 			} else {
-				document.attachEvent("onreadystatechange", readyStateChange);
+				document.attachEvent("onreadystatechange", _readyStateChange);
 				window.attachEvent("onload", _documentIsReady);
 			}
 			__readyEventHandlersInstalled = true;
 		}
-	};
-	
+	}
+
 	/**
 	 * Belongs to _docReady
 	 */
-	function _documentIsReady() {
+	function _documentIsReady()
+	{
 		if (!__readyFired) {
 			__readyFired = true;
 			for (var i = 0; i < __readyList.length; i++) {
@@ -194,94 +300,106 @@
 			}
 			__readyList = [];
 		}
-	};
-	
+	}
+
 	/**
 	 * Belongs to _docReady
 	 */
 	function _readyStateChange()
 	{
-		if ( document.readyState === "complete" ) {
+		if (document.readyState === "complete") {
 			_documentIsReady();
 		}
-	};
-	
+	}
+
 	/**
 	 * Main function that returns one ore more DOM Objects
 	 */
-	function _smdQSMain(selector, baseObj, element) 
-	{	
-		if (!baseObj || typeof baseObj == "undefined" || typeof baseObj.querySelectorAll == "undefined") {
+	function _smdQSMain(selector, baseObj, element)
+	{
+		if (!baseObj || typeof baseObj === "undefined" || typeof baseObj.querySelectorAll === "undefined") {
 			baseObj = document;
 		}
 
-		var domObjects = baseObj.querySelectorAll(selector);
-		if (typeof domObjects === "object" && domObjects != null) {
-			if (domObjects.length == 1) {
-				element             = domObjects[0];
-				element.isList      = false;
-				element.isDomObject = true;
-			} else {
-				if (domObjects.length > 0) {
-					var nodeList   = {};
-					nodeList.items = domObjects;
+		var domObjects, _usesQS = true;
 
-					/**
-					 * function, to go through all found nodes
-					 *
-					 * @param callback
-					 * @param scope
-					 */
-					nodeList.forEach = function (callback, scope)
-					{
-						for (var i = 0; i < this.items.length; i++) {
-							callback.call(scope, i, this.items[i]); // passes back stuff we need
-						}
-					};
-					element             = nodeList;
-					element.isList      = true;
-					element.isDomObject = true;
-				}
+		if (selector.substr(0,1) === "#" && selector.indexOf(" ") === -1 && selector.indexOf(".") === -1) {
+			_usesQS = false;
+			domObjects = baseObj.getElementById(selector.substr(1));
+		} else {
+			domObjects = baseObj.querySelectorAll(selector);
+		}
+
+		//var domObjects = baseObj.querySelectorAll(selector);
+		if (typeof domObjects === "object" && domObjects !== null) {
+			element.isList = false;
+			if (!_usesQS) {
+				element        = domObjects;
+			} else if (domObjects.length === 1) {
+				element        = domObjects[0];
+			} else if (domObjects.length > 0) {
+				var nodeList   = {};
+				nodeList.items = domObjects;
+
+				/**
+				 * function, to go through all found nodes
+				 *
+				 * @param callback
+				 * @param scope
+				 */
+				nodeList.forEach = function (callback, scope)
+				{
+					for (var i = 0; i < this.items.length; i++) {
+						callback.call(scope, i, this.items[i]); // passes back stuff we need
+					}
+				};
+				element        = nodeList;
+				element.isList = true;
+			} else {
+				element = null;
 			}
+		} else {
+			element = null;
 		}
 		return element;
-	};
-	
+	}
+
 	/**
 	 * smdQS
 	 *
 	 * Subfunctions and Unterfunktionen und properties:
 	 *
-	 * ajax()		-	jQuery.ajax() Equivalent (doesn't need a valid DOM node)
-	 * requireJS()	-	Inserts a script-Tag and runs an callback onload (doesn't need a valid DOM node)
-	 * docReady()	-	
-	 * forEach()	-	go through a list of nodes
-	 * isDomObject	-	true / false: Shows, if one or more nodes are found
-	 * isList		- 	true / false: If more than one nodes are found, this is "true" and you have to use "forEach()"
+	 * ajax()        -    jQuery.ajax() Equivalent (doesn't need a valid DOM node)
+	 * requireJS()   -    Inserts a script tag and runs an callback onload (doesn't need a valid DOM node)
+	 * requireCSS()  -    Inserts a link tag (css) and runs an callback onload (doesn't need a valid DOM node)
+	 * docReady()    -    jQuery.ready equicalent (
+	 * forEach()     -    go through a list of nodes
+	 * isList        -    true / false: If more than one nodes are found, this is "true" and you have to use "forEach()"
 	 *
-	 * @param selector		CSS/jQuery like Selektor (uses querySelectorAll)
-	 * @param baseObj		base node. if none is given, "document" is used
-	 * @returns {{}}
+	 * @param selector    CSS/jQuery like Selektor (uses querySelectorAll)
+	 * @param baseObj     base node. if none is given, "document" is used
+	 * @returns {{}} | null
 	 */
-	baseObj[funcName] = function(selector, baseObj) 
+	baseObj[funcName] = function (selector, baseObj)
 	{
-		var element 		= {};
-		element.isDomObject = false;
-		element.isList      = false;
-		
+		var element = {};
+
 		if (!__init) {
 			_smdQSinitHtmLElements();
 			__init = true;
 		}
-		
-		if (selector != "" && selector != null && typeof selector == "string") {
+
+		if (selector !== "" && selector !== null && typeof selector === "string") {
 			element = _smdQSMain(selector, baseObj, element);
 		}
-		
-		element.ajax 		= _ajax;
-		element.requireJS	= _requireJS;
-		element.ready		= _docReady;
+
+		if (element !== null) {
+			element.ajax       = _ajax;
+			element.requireJS  = _requireJS;
+			element.requireCSS = _requireCSS;
+			element.ready      = _docReady;
+		}
 
 		return element;
-	};
+	}
 })("smdQS", window);
