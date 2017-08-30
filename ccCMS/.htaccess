@@ -1,4 +1,0 @@
-AuthType Basic
-AuthName "ccCMS"
-AuthUserFile /Volumes/RedStick/Github/ccCMS/ccCMS/.htpasswd
-Require valid-user
