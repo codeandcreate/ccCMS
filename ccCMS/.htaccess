@@ -1,4 +1,4 @@
 AuthType Basic
 AuthName "ccCMS"
-AuthUserFile /Users/scops/Sites/ccCMS/ccCMS/.htpasswd
+AuthUserFile /Volumes/RedStick/Github/ccCMS/ccCMS/.htpasswd
 Require valid-user
