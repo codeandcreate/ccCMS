@@ -1,0 +1,66 @@
+
+body {
+	background-color: @color_cmsBackground;
+
+	> header {
+		position: fixed;
+		top:0;
+		left:0;
+		right:0;
+		height: @color_cmsNavigationHeight - 1px;
+		background: @color_cmsModuleBackground;
+		border-bottom: 1px solid @color_cmsModuleBorder;
+		
+		> h1 {
+			position: absolute;
+			width:260px;
+			left:50%;
+			margin:0;
+			margin-left:-130px;
+			line-height: @color_cmsNavigationHeight;
+			font-size: @font_sizeCmsH1;
+		}
+		
+		> label {
+			position: absolute;
+			top:0;
+			left:0;
+			font-size:32px;
+			line-height: @color_cmsNavigationHeight;
+			width:48px;
+			text-align: center;
+		}
+		
+		> input#toggleMain {
+			display: none;
+			
+			&:checked + nav {
+				left:0;
+			}
+		}
+		
+		> nav {
+			position: fixed;
+			top: 0;
+			left:-320px;
+			width: 320px;
+			height: 100%;
+			margin-top: @color_cmsNavigationHeight;
+			background-color: @color_cmsModuleBackground;
+			
+			> ul > li {
+				> ul {
+					max-height: 0px;
+					overflow: hidden;
+				}
+				> input[type="checkbox"] {
+					display: none;
+					
+					&:checked + ul {
+						max-height: 400px;
+					}
+				}
+			}
+		}
+	}
+}

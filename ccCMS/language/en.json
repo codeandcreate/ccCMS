@@ -1,0 +1,20 @@
+{
+	"test": "inhaltvontest",
+	"test2": "blubb",
+	"misc:errorTitle": "ccCMS Error",
+	"ccCMS_module_config:name": "Configuration",
+	"ccCMS_module_config:label_htpasswd": "Logins and passwords.",
+	"ccCMS_module_images:name": "Images",
+	"ccCMS_module_object:name": "Objects",
+	"ccCMS_module_pages:name":  "Pages",
+	"ccCMS_module_pages:pageSelect":  "Page",
+	"ccCMS_module_pages:newPage":  "Add a new page",
+	"ccCMS_module_pages:newPageQuery":  "Please enter a name for the new page.",
+	"ccCMS_module_pages:loadPage":  "Load selected page",
+	"ccCMS_module_pages:loadedPagePrefix":  "Page: ",
+	"ccCMS_module_pages:errorSelectedPageNotFound":  "The page you have selected could not be found.",
+	"ccCMS_module_pages:formField_url":  "URL: ",
+	"ccCMS_module_pages:formField_title":  "Title: ",
+	"ccCMS_module_pages:formField_content":  "Content: ",
+	"ccCMS_module_posts:name":  "Blog Posts"
+}

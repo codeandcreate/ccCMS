@@ -1,0 +1,4 @@
+<?
+class ccPHP_base {
+	
+}
