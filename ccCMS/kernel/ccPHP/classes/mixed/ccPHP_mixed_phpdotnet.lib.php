@@ -21,7 +21,7 @@ class ccPHP_mixed_phpdotnet extends ccPHP_base {
 	    if(is_array($object)) 
 	    { 
 	        foreach($object as $key => $value) 
-	            $return[$key] = phpdotnet::object2array($value); 
+	            $return[$key] = ccPHP_mixed_phpdotnet::object2array($value); 
 	    } 
 	    else 
 	    { 
@@ -31,7 +31,7 @@ class ccPHP_mixed_phpdotnet extends ccPHP_base {
 		        if($var) 
 		        { 
 		            foreach($var as $key => $value) 
-		            	$return[$key] = ($key && !$value) ? NULL : phpdotnet::object2array($value); 
+		            	$return[$key] = ($key && !$value) ? NULL : ccPHP_mixed_phpdotnet::object2array($value); 
 		        } 
 		    }
 	        else return $object; 

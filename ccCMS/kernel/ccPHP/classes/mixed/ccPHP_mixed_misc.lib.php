@@ -34,7 +34,7 @@ class ccPHP_mixed_misc extends ccPHP_base {
 	public static function copyProtectText($text)
 	{
 		$cpccharakterset = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!'ß$%&/()=?_:;#+-*";
-		$textArray = phpdotnet::str_split_unicode($text);
+		$textArray = ccPHP_mixed_phpdotnet::str_split_unicode($text);
 		foreach($textArray AS &$zeichen) {
 			$zeichen .= '<span class="cpc">' . $cpccharakterset[rand(0,strlen($cpccharakterset)-1)] . '</span>';
 		}

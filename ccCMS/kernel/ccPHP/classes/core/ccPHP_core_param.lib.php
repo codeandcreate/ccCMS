@@ -10,6 +10,8 @@ class ccPHP_core_param extends ccPHP_base {
 		} else {
 			$_request_data_break_point = (strpos($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'] ,$breakpoint)+strlen($breakpoint) + strlen($domainext));
 		}
+		
+		//$_request_data_break_point = $_request_data_break_point - 5;
 	
 		$request_data = substr($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'], $_request_data_break_point);
 		

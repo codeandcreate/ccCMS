@@ -1,23 +1,18 @@
 <?
 
-class ccPHP_net_simpleBlog extends ccPHP_base {
-	
+class ccPHP_net_simpleBlog extends ccPHP_base
+{	
 	protected $_entries_path = "";
 	protected $_entries_per_page = "";
 	protected $_list_entries = array();
 	protected $_list_entries_by_date = array();
-	
-	private $cacheInstance = false;
 	
 	//initialisiert die seite:
     function __construct($entries_path, $entries_per_page = 5)
     {
     	$this->_entries_path = $entries_path;
     	$this->_entries_per_page = $entries_per_page;
-    	
-    	$this->cacheInstance = new ccPHP_cache();
-    	
-    	
+   
     	//checking:
     	if (!$this->_list_files()) {
     		ccPHP_error::fatal_error(__FILE__, "CONSTRUCT: no entries.");
@@ -29,18 +24,18 @@ class ccPHP_net_simpleBlog extends ccPHP_base {
     {
     	$cachedData = $cachedDataEntriesByDate = false;
     	if (!$noCache) {
-			$cachedData = $this->cacheInstance->getCache("blogList" . $this->_entries_path);
-			$cachedDataEntriesByDate = $this->cacheInstance->getCache("blogListEntriesByDate" . $this->_entries_path);
+			$cachedData = ccPHP_mixed_cache::get("blogList" . $this->_entries_path);
+			$cachedDataEntriesByDate = ccPHP_mixed_cache::get("blogListEntriesByDate" . $this->_entries_path);
 		}
     
 		if (!$cachedData OR !$cachedDataEntriesByDate) {
-			
     		$this->_list_entries = array();
     		$d = dir($this->_entries_path);
     		
     		$filesToProcess = array();
     		while (false !== ($entry = $d->read())) {
-				if (strpos($entry, ".bhtml") !== false){
+				$_fileNameData = explode(".", $entry);
+				if (in_array($_fileNameData[1], ["bhtml", "md"])) {
 					$filesToProcess[] = $entry;
 				}
 			}
@@ -52,7 +47,7 @@ class ccPHP_net_simpleBlog extends ccPHP_base {
 				foreach($filesToProcess AS $entry) {
 					$entryid = substr($entry,0,8);
 					if (file_exists($this->_entries_path."/".$entryid."_meta.xml")) {
-						$entry_data['meta'] = phpdotnet::object2array(simplexml_load_file($this->_entries_path."/".$entryid."_meta.xml"));
+						$entry_data['meta'] = ccPHP_mixed_phpdotnet::object2array(simplexml_load_file($this->_entries_path."/".$entryid."_meta.xml"));
 					}
 					$entry_data['meta']['date'] = date("d.m.Y", strtotime($entryid));
 					$entry_data['meta']['timestamp'] = strtotime($entryid);
@@ -70,8 +65,8 @@ class ccPHP_net_simpleBlog extends ccPHP_base {
 			}
     		
  			if (!$noCache) {
- 				$this->cacheInstance->setCache("blogList" . $this->_entries_path, $this->_list_entries);
- 				$this->cacheInstance->setCache("blogListEntriesByDate" . $this->_entries_path, $this->_list_entries_by_date);
+ 				ccPHP_mixed_cache::set("blogList" . $this->_entries_path, $this->_list_entries);
+ 				ccPHP_mixed_cache::set("blogListEntriesByDate" . $this->_entries_path, $this->_list_entries_by_date);
  			}
 		} else {
 			$this->_list_entries = $cachedData;
@@ -147,10 +142,9 @@ class ccPHP_net_simpleBlog extends ccPHP_base {
    			die();
     	}
     	
-    	
     	$cachedData = false;
     	if (!$noCache) {
-			$cachedData = $this->cacheInstance->getCache("blogEntry" . $entry_array['meta']['id'] . $entry_array['meta']['timestamp']);
+			$cachedData = ccPHP_mixed_cache::get("blogEntry" . $entry_array['meta']['id'] . $entry_array['meta']['timestamp']);
 		}
 		
 		if (!$cachedData) {
@@ -158,17 +152,27 @@ class ccPHP_net_simpleBlog extends ccPHP_base {
 	    	if (!file_exists($this->_entries_path."/".$entry_array['filename'])) {
    	 			ccPHP_error::fatal_error(__FILE__, "getSelectedEntry: can't find datafile (".$this->_entries_path."/".$entry_array['filename'].").");
    	 			die();
-   	 			}
-   	 			//haupttext:
-    	
-   	 			$bbcode_obj = new ccPHP_bbcode($optional_image_path);
-   	 			$bbcode_data = file_get_contents($this->_entries_path."/".$entry_array['filename']);
-   	 			$bbcode_data = str_replace("\n", "<br />", $bbcode_data);
-   	 			$cachedData = $bbcode_obj->decode($bbcode_data);
-   	 			
-   	 			if (!$noCache) {
-   	 				$this->cacheInstance->setCache("blogEntry" . $entry_array['meta']['id'] . $entry_array['meta']['timestamp'], $cachedData);
-   	 			}
+   	 		}
+				
+			$_fileNameData = explode(".", $entry_array['filename']);
+			
+			switch($_fileNameData[1]) {
+				case 'md':
+   	 				$md_obj = new ccPHP_net_markdown();
+   	 				$md_data = file_get_contents($this->_entries_path."/".$entry_array['filename']);
+					$cachedData = $md_obj->decode($md_data);
+					break;
+				case 'bhtml':
+   	 				$bbcode_obj = new ccPHP_net_bbcode($optional_image_path);
+   	 				$bbcode_data = file_get_contents($this->_entries_path."/".$entry_array['filename']);
+   	 				$bbcode_data = str_replace("\n", "<br />", $bbcode_data);
+   	 				$cachedData = $bbcode_obj->decode($bbcode_data);
+					break;
+			}
+
+ 			if (!$noCache) {
+ 				ccPHP_mixed_cache::set("blogEntry" . $entry_array['meta']['id'] . $entry_array['meta']['timestamp'], $cachedData);
+ 			}
    	 			
    	 	}
 		
