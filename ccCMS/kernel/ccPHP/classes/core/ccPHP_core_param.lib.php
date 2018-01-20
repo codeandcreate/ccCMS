@@ -3,7 +3,7 @@ class ccPHP_core_param extends ccPHP_base {
 
 	protected $_PARAM = array();
 	
-	function __construct($breakpoint, $domainext = ".de", $protocoll = 'http')
+	function __construct($breakpoint, $domainext = ".de", $protocoll = 'http', $port = "")
 	{
 		if ($_SERVER['SERVER_NAME'] == "localhost") {
 			$_request_data_break_point = (strpos($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'] ,$breakpoint)+strlen($breakpoint));
@@ -18,7 +18,7 @@ class ccPHP_core_param extends ccPHP_base {
 		$this->_PARAM = $this->getParamArray($request_data, "/");
 		
 		//aktuelle URL noch zur verfügung stellen:
-		$this->_PARAM['SERVER_ROOT_URL'] = $protocoll."://".substr($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'], 0, $_request_data_break_point)."/";
+		$this->_PARAM['SERVER_ROOT_URL'] = $protocoll."://".substr($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'], 0, $_request_data_break_point).$port."/";
 	}
 	
 	protected function getParamArray($string, $limiter)

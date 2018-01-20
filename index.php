@@ -51,7 +51,7 @@
 			break;
 		default:
 			$staticRequestCheck = $_SERVER['REQUEST_URI'];
-			if (empty($staticRequestCheck)) {
+			if (empty($staticRequestCheck) || $staticRequestCheck === "/") {
 				$staticRequestCheck = "/index.html";
 			}
 			if (preg_match('/(.*)\.html$/', $staticRequestCheck)) {
