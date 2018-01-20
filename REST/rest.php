@@ -1,13 +1,6 @@
-<?
-include_once(dirname(__FILE__) . "/../ccCMS/config/cms.php");
-
-$allowedACAOs = [
-	SITE_URL
-];
-
-$allowedRest = [
-	'/\/custom\/(.*)/i' => [],
-];
+<?php
+include_once(dirname(__FILE__) . "/../ccCMS/config/cms.conf.php");
+include_once(dirname(__FILE__) . "/../ccCMS/config/frontend_rest.conf.php");
 
 $refererUrl = (isset($_SERVER['HTTP_ORIGIN']) AND !empty($_SERVER['HTTP_ORIGIN'])) ?
             $_SERVER['HTTP_ORIGIN'] : (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : false);

@@ -1,7 +1,12 @@
-<?
-
-class ccPHP_net_session extends ccPHP_base {
-	
+<?php
+/**
+ * ccPHP_net_session - session handling
+ *
+ * @version 0.0 - darft
+ * @author Matthias Weiß <info@codeandcreate.de>
+ */
+class ccPHP_net_session extends ccPHP_base
+{	
 	//speichert ob eine session über cookies oder über parameter funktioniert (0 = parameter, 1 = cookies)
 	protected $_session_type = 0;
 	

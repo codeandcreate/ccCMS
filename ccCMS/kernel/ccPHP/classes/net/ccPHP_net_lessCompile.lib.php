@@ -1,13 +1,17 @@
-<?
-
-class ccPHP_net_lessCompile extends ccPHP_base {
-
-  private $lessFormat 	 = "default";
+<?php
+/**
+ * ccPHP_net_lessCompile - less compiler
+ *
+ * @version 0.0 - darft
+ * @author Matthias Weiß <info@codeandcreate.de>
+ */
+class ccPHP_net_lessCompile extends ccPHP_base
+{
+	private $lessFormat 	 = "default";
 	private $lessUseComments = true;
 
-
-  function __construct($lessFormat = null, $lessUseComments = null)
-  {
+	function __construct($lessFormat = null, $lessUseComments = null)
+	{
 		require CCPHP_BASE_PATH . '/3rdparty/lessCompiler/lessc.inc.php';
 
 		if ($lessFormat !== null) {

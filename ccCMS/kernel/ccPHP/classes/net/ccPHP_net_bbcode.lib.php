@@ -1,7 +1,12 @@
-<?
-
-class ccPHP_net_bbcode extends ccPHP_base {
-	
+<?php
+/**
+ * ccPHP_net_bbcode - bbcode decoding lib
+ *
+ * @version 0.0 - darft
+ * @author Matthias Weiß <info@codeandcreate.de>
+ */
+class ccPHP_net_bbcode extends ccPHP_base
+{	
 	protected $bbobj;
 	
 	function __construct() 

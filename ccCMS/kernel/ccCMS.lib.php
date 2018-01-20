@@ -1,6 +1,12 @@
-<?
-class ccCMS {
-
+<?php
+/**
+ * inits ccCMS
+ *
+ * @version 0.0 - darft
+ * @author Matthias Weiß <info@codeandcreate.de>
+ */
+class ccCMS
+{
 	public $settingsInstance		= null;
 	public $languageInstance 		= null;
 	public $backendModuleInstances 	= null;

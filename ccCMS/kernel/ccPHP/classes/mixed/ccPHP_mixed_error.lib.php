@@ -1,4 +1,10 @@
-<?
+<?php
+/**
+ * ccPHP_mixed_error - error display
+ *
+ * @version 0.0 - darft
+ * @author Matthias Weiß <info@codeandcreate.de>
+ */
 class ccPHP_mixed_error extends ccPHP_base {
     
     public static function fatal_error($error_title = "", $error_text) 

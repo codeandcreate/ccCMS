@@ -1,4 +1,4 @@
-<?
+<?php
 	$ccCMS_dynamicConf = [
 		/* dynamic pages based on path */
 		'pages' => [
@@ -8,7 +8,7 @@
 		],
 		/* files that should be served directly form /site */
 		'directFiles' => [
-			//'sitemap.xml'	
+			'browserconfig.xml'	
 		],
 		/* if set, this is the default url of the site */
 		//'home' => 'example'

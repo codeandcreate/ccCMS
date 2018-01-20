@@ -1,6 +1,12 @@
-<?
-class ccPHP_core_backendUser extends ccPHP_base {
-
+<?php
+/**
+ * ccPHP_core_backendUser - a darft for backend user management
+ *
+ * @version 0.0 - darft
+ * @author Matthias Weiß <info@codeandcreate.de>
+ */
+class ccPHP_core_backendUser extends ccPHP_base 
+{
 	private $backendUsers = [];
 	
 	private $backendUserConfigurationPath = CMS_BASE_PATH . "/.htpasswd";

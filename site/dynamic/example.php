@@ -4,7 +4,7 @@
 define('CMS_BASE_PATH', realpath(dirname(__FILE__) . "/../../ccCMS/"));
 define('GLOBAL_CACHE_DIR', dirname(__FILE__) . "/cache/");
 define('CMS_MODE', 'frontend');
-define('SCPHP_CUSTOM_CLASSES_PATH', CMS_BASE_PATH . "/customized/");
+define('CCPHP_CUSTOM_CLASSES_PATH', CMS_BASE_PATH . "/customized/");
 include CMS_BASE_PATH . "/kernel/ccPHP/ccPHP.lib.php";
 
 //url config:

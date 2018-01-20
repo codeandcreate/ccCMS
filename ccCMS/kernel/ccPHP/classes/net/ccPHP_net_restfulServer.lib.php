@@ -1,6 +1,12 @@
-<?
-class ccPHP_net_restfulServer extends ccPHP_rest_base {
-
+<?php
+/**
+ * ccPHP_net_restfulServer - restful server
+ *
+ * @version 0.0 - darft
+ * @author Matthias Weiß <info@codeandcreate.de>
+ */
+class ccPHP_net_restfulServer extends ccPHP_rest_base
+{
 	private $cmsInstance = null;
 
 	public function __construct($request, $cmsInstance)

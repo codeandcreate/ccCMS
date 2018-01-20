@@ -1,5 +1,10 @@
-<?
-	
+<?php
+/**
+ * ccPHP_net_markdown - markdown decoding lib
+ *
+ * @version 0.0 - darft
+ * @author Matthias Weiß <info@codeandcreate.de>
+ */
 class ccPHP_net_markdown extends ccPHP_base {
 	
 	private $mdObj;

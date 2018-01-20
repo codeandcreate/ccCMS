@@ -1,4 +1,10 @@
-<?
+<?php
+/**
+ * ccPHP_mixed_language - language file handling
+ *
+ * @version 0.0 - darf
+ * @author Matthias Weiß <info@codeandcreate.de>
+ */
 class ccPHP_mixed_language extends ccPHP_base {
 	
 	private $languageData = null;

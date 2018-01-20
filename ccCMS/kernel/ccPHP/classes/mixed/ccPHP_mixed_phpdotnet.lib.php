@@ -1,6 +1,12 @@
-<?
-class ccPHP_mixed_phpdotnet extends ccPHP_base {
-	
+<?php
+/**
+ * ccPHP_mixed_phpdotnet - mixed functions found comments on php.net
+ *
+ * @version 0.1 - initial version
+ * @author Matthias Weiß <info@codeandcreate.de>
+ */
+class ccPHP_mixed_phpdotnet extends ccPHP_base
+{
 	public static function str_split_unicode($str, $l = 0)
 	{
 	    if ($l > 0) {

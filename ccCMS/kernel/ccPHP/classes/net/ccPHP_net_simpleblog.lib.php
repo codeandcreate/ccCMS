@@ -1,5 +1,10 @@
-<?
-
+<?php
+/**
+ * ccPHP_net_simpleBlog - simple blogging library
+ *
+ * @version 0.0 - darft
+ * @author Matthias Weiß <info@codeandcreate.de>
+ */
 class ccPHP_net_simpleBlog extends ccPHP_base
 {	
 	protected $_entries_path = "";

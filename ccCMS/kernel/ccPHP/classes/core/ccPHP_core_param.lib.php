@@ -1,17 +1,32 @@
-<?
-class ccPHP_core_param extends ccPHP_base {
-
+<?php
+/**
+ * ccPHP_core_param - management class for request paths (look at /.htaccess)
+ *
+ * @version 0.1 - initial version
+ * @author Matthias Weiß <info@codeandcreate.de>
+ */
+class ccPHP_core_param extends ccPHP_base
+{
+	/*
+	 * cache array for the path structure
+	 */
 	protected $_PARAM = array();
-	
-	function __construct($breakpoint, $domainext = ".de", $protocoll = 'http', $port = "")
+
+	/**
+	 * ccPHP_core_param constructor
+	 *
+	 * @param string $breakpoint
+	 * @param string $domainext
+	 * @param string $protocoll
+	 * @param string $port
+	 */
+	function __construct($breakpoint, $domainext = ".com", $protocoll = 'http', $port = "")
 	{
 		if ($_SERVER['SERVER_NAME'] == "localhost") {
 			$_request_data_break_point = (strpos($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'] ,$breakpoint)+strlen($breakpoint));
 		} else {
 			$_request_data_break_point = (strpos($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'] ,$breakpoint)+strlen($breakpoint) + strlen($domainext));
 		}
-		
-		//$_request_data_break_point = $_request_data_break_point - 5;
 	
 		$request_data = substr($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'], $_request_data_break_point);
 		
@@ -20,7 +35,13 @@ class ccPHP_core_param extends ccPHP_base {
 		//aktuelle URL noch zur verfügung stellen:
 		$this->_PARAM['SERVER_ROOT_URL'] = $protocoll."://".substr($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'], 0, $_request_data_break_point).$port."/";
 	}
-	
+
+	/**
+	 * Splits the request string into a useable array
+	 *
+	 * @param string $string
+	 * @param string $limiter
+	 */
 	protected function getParamArray($string, $limiter)
 	{
 	
@@ -45,14 +66,20 @@ class ccPHP_core_param extends ccPHP_base {
 		}
 		return $_PARAM;
 	}
-	
-	/* wenn $is_index auf true gesetzt ist muss param_name einen index (also int) des arrays beinhalten. Damit wird dann (sofern vorhanden) der keyname ausgegeben */
-	public function getParam($_param_name = "", $is_index = "false")
+
+	/**
+	 * Returns a specific or the hole request array
+	 * if $is_index is set to true, param_name must be set to the requested index (int).
+	 *
+	 * @param string|int $_param_name
+	 * @param boolean $is_index
+	 */
+	public function getParam($_param_name = "", $is_index = false)
 	{
-		if (empty($_param_name) AND $is_index == "false") {
+		if (empty($_param_name) AND $is_index === false) {
 			return $this->_PARAM;
 		} else {
-			if ($is_index == "true") {
+			if ($is_index === true) {
 				$_tmp = array_keys($this->_PARAM);
 				if (isset($_tmp[$_param_name])) {
 					return $_tmp[$_param_name];

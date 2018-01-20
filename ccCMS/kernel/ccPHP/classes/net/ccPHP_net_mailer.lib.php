@@ -1,5 +1,10 @@
-<?
-
+<?php
+/**
+ * ccPHP_net_mailer - a phpmailer abstraction library
+ *
+ * @version 0.0 - darft
+ * @author Matthias Weiß <info@codeandcreate.de>
+ */
 class ccPHP_net_mailer extends ccPHP_base {
 	
 	protected $mailer;

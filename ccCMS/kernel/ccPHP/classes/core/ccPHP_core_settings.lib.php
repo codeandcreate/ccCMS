@@ -1,9 +1,14 @@
-<?
-class ccPHP_core_settings extends ccPHP_base {
-	
+<?php
+/**
+ * ccPHP_core_settings - settings management for a page / ccCMS
+ *
+ * @version 0.0 - darft
+ * @author Matthias Weiß <info@codeandcreate.de>
+ */
+class ccPHP_core_settings extends ccPHP_base
+{	
 	protected $_website_data = [];
 	
-	//initialisiert die seite:
     function __construct($title, $keywords, $description, $copyright, $robots, $revisitafter, $rating, $publisher, $language, $js_files, $css_files) 
     {
     	$this->_website_data['title'] = $title;

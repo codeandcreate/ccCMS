@@ -1,9 +1,9 @@
-<?
+<?php
 /**
- * initialisiert und läd das ccPHP Framework
+ * inits the ccPHP Framework
  *
- * Version:
- * Autor: Matthias Weiß
+ * @version 0.1 - initial version
+ * @author Matthias Weiß <info@codeandcreate.de>
  */
 
 if (!defined('CCPHP_BASE_PATH')) {
@@ -26,13 +26,12 @@ if ($classesPath = opendir(dirname(__FILE__) . "/classes")) {
 	}
 }
 
-
 //load customized classes
-if (defined('SCPHP_CUSTOM_CLASSES_PATH')) {
-	if ($dh = opendir(SCPHP_CUSTOM_CLASSES_PATH)) {
+if (defined('CCPHP_CUSTOM_CLASSES_PATH')) {
+	if ($dh = opendir(CCPHP_CUSTOM_CLASSES_PATH)) {
 	 	while (($file = readdir($dh)) !== false) {
 	 		if (strpos($file, ".lib.php") !== false) {
-	     		require_once SCPHP_CUSTOM_CLASSES_PATH . '/' . $file;
+	     		require_once CCPHP_CUSTOM_CLASSES_PATH . '/' . $file;
 	 		}
 	  }
 	  closedir($dh);

@@ -1,10 +1,15 @@
-<?
+<?php
 /**
- *  Mixed Caching Lib, for a simple file based cache
+ * ccPHP_core_settings - Mixed Caching Lib, for a simple file based cache
+ *
+ * @version 0.0 - initial version
+ * @author Matthias Weiß <info@codeandcreate.de>
  */
-	
-class ccPHP_mixed_cache extends ccPHP_base {
-
+class ccPHP_mixed_cache extends ccPHP_base
+{
+	/*
+	 * default cache folder
+	 */
 	private static $cachePrefix = "ccPHP_cache/";
 	
     /**
@@ -82,8 +87,8 @@ class ccPHP_mixed_cache extends ccPHP_base {
 	/**
 	 * Saves $cachedData
 	 *
-	 * @param $cacheKey
-	 * @param $cacheData
+	 * @param string $cacheKey
+	 * @param mixed $cacheData
 	 * @return bool
 	 */
 	public static function set($cacheKey, $cacheData, $persistentCache = false)
@@ -130,7 +135,7 @@ class ccPHP_mixed_cache extends ccPHP_base {
 	/**
 	 * Generates a hash of a $cacheKey
 	 *
-	 * @param $cacheKey
+	 * @param string $cacheKey
 	 * @return string
 	 */
 	private static function generateInternalCacheKey($cacheKey)
