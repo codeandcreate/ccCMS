@@ -62,6 +62,7 @@ class ccPHP_net_restfulServer extends ccPHP_rest_base
 				if (class_exists('custom_net_restfulServer')) {
 					$customRestfulInstance = new custom_net_restfulServer($request);
 					$this->setReturn($customRestfulInstance->getReturnData());
+					$this->setReturnContentType($customRestfulInstance->getEncodingType());
 				} else {
 					$this->setReturn(null);
 				}

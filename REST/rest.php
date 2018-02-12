@@ -1,4 +1,9 @@
 <?php
+
+/**
+ *	Handles RESTful calls on /REST/...
+ */
+
 include_once(dirname(__FILE__) . "/../ccCMS/config/cms.conf.php");
 include_once(dirname(__FILE__) . "/../ccCMS/config/frontend_rest.conf.php");
 
@@ -34,7 +39,7 @@ foreach($allowedRest AS $regex => $ipRanges){
 
 if ( $restCall === true ) {
 	$restInstance = new ccPHP_net_restfulServer($restPath, $cmsInstance);
-	echo $restInstance->getReturnData();
+	$restInstance->response();
 } else {
 	header('HTTP/1.1 403 Forbidden', true, 403);
 	echo 'Forbidden';

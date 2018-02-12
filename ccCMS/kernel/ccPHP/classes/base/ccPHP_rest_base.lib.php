@@ -60,6 +60,9 @@ class ccPHP_rest_base extends ccPHP_base
 			case 'forbidden':
 				$this->encodingType = "forbidden";
 				break;
+			default:
+				$this->encodingType = $encoding;
+				break;
 
 		}
 	}
@@ -79,6 +82,19 @@ class ccPHP_rest_base extends ccPHP_base
 	 */
 	public function getReturnData()
 	{
+		return $this->returnData;
+	}
+
+	/**
+	 * returns the cached data
+	 */
+	public function getEncodingType()
+	{
+		return $this->encodingType;
+	}
+	
+	public function response()
+	{
 		$returnData = $this->returnData;
 		$contentType = "Content-Type: " . $this->encodingType;
 
@@ -97,6 +113,6 @@ class ccPHP_rest_base extends ccPHP_base
 		}
 
 		header($contentType);
-		return $returnData;
+		echo $returnData;
 	}
 }
