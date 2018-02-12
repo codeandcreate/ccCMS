@@ -7,11 +7,11 @@ define('CMS_NAME', 'ccCMS');
 define('CMS_VERSION', '0.0-testing');
 define('CMS_DESCRIPTION', '');
 define('CMS_COPYRIGHT', 'by Matthias Weiß');
-define('CMS_JS_FILES', []);
-define('CMS_CSS_FILES', []);
+define('CMS_JS_FILES', false); //string
+define('CMS_CSS_FILES', false); //array
 define('CMS_BASE_PATH', realpath(dirname(__FILE__) . "/.."));
-define('CMS_INITIAL_LOGIN', '');
-define('CMS_MODULES', []);
+define('CMS_INITIAL_LOGIN', false); //string
+define('CMS_MODULES', false); //array
 
 //Path to search for custom classes:
 define('CCPHP_CUSTOM_CLASSES_PATH', CMS_BASE_PATH . "/customized/");

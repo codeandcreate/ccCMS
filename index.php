@@ -5,6 +5,13 @@
 
 $requestPices = explode("/", substr($_SERVER['REQUEST_URI'], 1));
 
+// /REST on CLI
+if (php_sapi_name() === 'cli-server' && $requestPices[0] === "REST") {
+	include dirname(__FILE__) . "/REST/rest.php";
+	die();
+}
+
+// dynamic pages
 if (file_exists(dirname(__FILE__)."/site/dynamic/ccCMS_dynamic.conf.php")) {
 	include dirname(__FILE__)."/site/dynamic/ccCMS_dynamic.conf.php";
 	if (isset($ccCMS_dynamicConf)) {
@@ -27,6 +34,7 @@ if (file_exists(dirname(__FILE__)."/site/dynamic/ccCMS_dynamic.conf.php")) {
 	}
 }
 
+//static content
 switch($requestPices[0]) {
 	case 'css':
 	case 'js':
