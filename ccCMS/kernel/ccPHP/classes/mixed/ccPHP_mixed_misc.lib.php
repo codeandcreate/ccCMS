@@ -57,4 +57,19 @@ class ccPHP_mixed_misc extends ccPHP_base
 		}
 		return implode("", $textArray);
 	}
+	
+	/**
+	 * Returns the workmode; web-server or cli-server
+	 * 
+	 * @return string	"web-server" | "cli-server"
+	 */
+	public static function phpWorkMode()
+	{
+		$workmode = "web-server";
+		if (php_sapi_name() == 'cli-server') {
+			$workmode = "cli-server";
+		}
+		
+		return $workmode;
+	}
 }
