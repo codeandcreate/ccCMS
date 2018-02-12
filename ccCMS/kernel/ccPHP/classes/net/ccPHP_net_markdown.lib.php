@@ -7,7 +7,6 @@
  */
 class ccPHP_net_markdown extends ccPHP_base {
 	
-	private $mdObj;
 	
 	function __construct() 
 	{
@@ -43,7 +42,6 @@ class ccPHP_net_markdown extends ccPHP_base {
 					$el[ 'attributes' ][ 'target' ] = '_blank';
 				}
 				break;
-			}
 		return $el;
 	}
 }

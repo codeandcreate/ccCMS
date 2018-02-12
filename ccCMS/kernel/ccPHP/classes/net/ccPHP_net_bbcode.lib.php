@@ -2,12 +2,10 @@
 /**
  * ccPHP_net_bbcode - bbcode decoding lib
  *
- * @version 0.0 - darft
  * @author Matthias Weiß <info@codeandcreate.de>
  */
 class ccPHP_net_bbcode extends ccPHP_base
 {	
-	protected $bbobj;
 	
 	function __construct() 
 	{
@@ -15,11 +13,7 @@ class ccPHP_net_bbcode extends ccPHP_base
 	
 		$this->bbobj = new StringParser_BBCode();
 		
-		$this->bbobj->addFilter (STRINGPARSER_FILTER_PRE, 'ccPHP_bbcode::convertlinebreaks');
 
-		$this->bbobj->addParser (array ('block', 'inline', 'link', 'listitem'), 'ccPHP_bbcode::htmlspecialchars');
-		$this->bbobj->addParser (array ('block', 'inline', 'link', 'listitem'), 'ccPHP_bbcode::nl2br');
-		$this->bbobj->addParser ('list', 'ccPHP_bbcode::bbcode_stripcontents');
 		
 		$this->bbobj->addCode ('b', 'simple_replace', null, array ('start_tag' => '<b>', 'end_tag' => '</b>'),
 		                  'inline', array ('listitem', 'block', 'inline', 'link'), array ());
@@ -27,13 +21,9 @@ class ccPHP_net_bbcode extends ccPHP_base
 		                  'inline', array ('listitem', 'block', 'inline', 'link'), array ());
 		$this->bbobj->addCode ('i', 'simple_replace', null, array ('start_tag' => '<i>', 'end_tag' => '</i>'),
 		                  'inline', array ('listitem', 'block', 'inline', 'link'), array ());
-		$this->bbobj->addCode ('url', 'usecontent?', 'ccPHP_bbcode::do_bbcode_url', array ('usecontent_param' => 'default'),
 		                  'link', array ('listitem', 'block', 'inline'), array ('link'));
-		$this->bbobj->addCode ('link', 'usecontent?', 'ccPHP_bbcode::do_bbcode_link', array (),
-		                  'link', array ('listitem', 'block', 'inline'), array ('link'));
-		$this->bbobj->addCode ('img', 'usecontent', 'ccPHP_bbcode::do_bbcode_img', array (),
+		
 		                  'image', array ('listitem', 'block', 'inline', 'link'), array ());
-		$this->bbobj->addCode ('bild', 'usecontent', 'ccPHP_bbcode::do_bbcode_img', array (),
 		                  'image', array ('listitem', 'block', 'inline', 'link'), array ());
 		$this->bbobj->setOccurrenceType ('img', 'image');
 		$this->bbobj->setOccurrenceType ('bild', 'image');
@@ -42,16 +32,12 @@ class ccPHP_net_bbcode extends ccPHP_base
 		                  'list', array ('block', 'listitem'), array ());
 		$this->bbobj->addCode ('*', 'simple_replace', null, array ('start_tag' => '<li>', 'end_tag' => '</li>'),
 		                  'listitem', array ('list'), array ());
-		$this->bbobj->addCode ('fleft', 'simple_replace', null, array ('start_tag' => '<div style="float:left">', 'end_tag' => '</div>'),
-		                  'inline', array ('listitem', 'block', 'inline', 'link'), array ());
-		$this->bbobj->addCode ('fright', 'simple_replace', null, array ('start_tag' => '<div style="float:right">', 'end_tag' => '</div>'),
-		                  'inline', array ('listitem', 'block', 'inline', 'link'), array ());
+						  
 		$this->bbobj->setCodeFlag ('*', 'closetag', BBCODE_CLOSETAG_OPTIONAL);
 		$this->bbobj->setCodeFlag ('*', 'paragraphs', true);
 		$this->bbobj->setCodeFlag ('list', 'paragraph_type', BBCODE_PARAGRAPH_BLOCK_ELEMENT);
 		$this->bbobj->setCodeFlag ('list', 'opentag.before.newline', BBCODE_NEWLINE_DROP);
 		$this->bbobj->setCodeFlag ('list', 'closetag.before.newline', BBCODE_NEWLINE_DROP);
-		$this->bbobj->setRootParagraphHandling (true);
 	}
 	
 	// ZeilenumbrŸche verschiedener Betriebsysteme vereinheitlichen

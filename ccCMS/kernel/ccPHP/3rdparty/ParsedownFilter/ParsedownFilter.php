@@ -28,10 +28,8 @@
 			
 		}
 		
-		
 		protected function element(array $Element)
 		{
-			
 			if( isset( $this->tagCallback ) ){
 			
 				if( is_array( $Element ) ){
@@ -45,8 +43,9 @@
 							$result = $strf( $Element );
 						}
 						
-						if( $result === false ){
+						if( $result === false || $result === null){
 							//Remove tag.
+							$result = $Element;
 						}
 					}
 				}
@@ -54,5 +53,4 @@
 			//Return result using modified values.
 			return parent::element( $result );
 		}
-	};
-?>
+	}
